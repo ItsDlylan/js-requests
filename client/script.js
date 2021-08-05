@@ -2,6 +2,7 @@
 //THE TEST SERVER IS RUNNING ON LOCALHOST:3000//
 ////////////////////////////////////////////////
 
+
 // PROBLEM 1
 /*
     In the index.html file in this folder there is a button with an id of 'say-hello-button'!
@@ -10,17 +11,25 @@
 */
 
 // CODE HERE
-
+let sayHelloButton = document.querySelector('#say-hello-button');
 
 // PROBLEM 2
 /*
-    Create a function that changes sayHelloButton's background color to black and its text color to white (you can use the .style object or create a CSS class and use classList.add)
+    Create a function that changes sayHelloButton's background color to black and its text color to white 
+    (you can use the .style object or create a CSS class and use classList.add)
     
     Attach a mouseover event to sayHelloButton that calls the function you wrote
 */
 
 // CODE HERE
-
+function changeBgColor(){
+    sayHelloButton.style.backgroundColor = 'black';
+    sayHelloButton.style.color = 'white';
+}
+// if we dont use the arrow function and just use the function call of changeBgColor, it immediately runs the function without the event.
+sayHelloButton.addEventListener('mouseover', () =>{
+    changeBgColor();
+})
 
 // PROBLEM 3
 /*
@@ -32,7 +41,16 @@
 */
 
 // CODE HERE
+function revertColor(){
+    sayHelloButton.style.backgroundColor = '#EFEFEF';
+    sayHelloButton.style.color = 'black';
+}
 
+sayHelloButton.addEventListener('mouseout', () =>{
+    revertColor()
+})
+
+// Why does the buttons border get set when you initially hover.
 
 // PROBLEM 4
 /*
@@ -53,7 +71,7 @@ const sayHello = () => {
 // DO NOT EDIT FUNCTION
 
 // CODE HERE
-
+sayHelloButton.addEventListener('click', sayHello)
 
 // PROBLEM 5 
 /*
@@ -63,11 +81,21 @@ const sayHello = () => {
     
     Use axios inside the ohMy function to make a GET request to 'http://localhost:3000/animals' 
     
-    Handle the promise that's returned with a .then, which you should pass a callback function to. Inside the callback function, console.log the response's data (in the intermediate instructions we'll come back to this function and add HTML).
+    Handle the promise that's returned with a .then, which you should pass a callback function to. 
+    Inside the callback function, console.log the response's data (in the intermediate instructions we'll come back to this function and add HTML).
 */ 
 
 const ohMy = () => {
     // YOUR CODE HERE
+    axios.get(`http://localhost:3000/animals`).then(res => {
+
+        for(let i = 0; i<res.data.length; i++){
+            let p = document.createElement('p');
+            p.textContent = res.data[i];
+            let body = document.querySelector('body');
+            body.appendChild(p)
+        }
+    })
 }
 
 document.getElementById('animals-button').addEventListener('click', ohMy)
@@ -75,7 +103,8 @@ document.getElementById('animals-button').addEventListener('click', ohMy)
 
 // PROBLEM 6 
 /*
-    Now lets see if you can send a request param! inside repeatMyParam function below  make get request to 'http://localhost:3000/repeat/{SOMEPARAM}', but with a string instead of {SOMEPARAM}.  
+    Now lets see if you can send a request param! inside repeatMyParam function below  make get request to 'http://localhost:3000/repeat/{SOMEPARAM}', 
+    but with a string instead of {SOMEPARAM}.  
 
     The function that runs when this request is made will return whatever parameter you sent 
 
@@ -86,10 +115,15 @@ document.getElementById('animals-button').addEventListener('click', ohMy)
     We'll be updating this function in the next problem.
 */
 
-const repeatMyParam = () => {
+const repeatMyParam = (SOMEPARAM) => {
     //YOUR CODE HERE
+    axios.get(`http://localhost:3000/repeat/${SOMEPARAM}`).then(res =>{
+        document.querySelector('#repeat-text').textContent = `${res.data}`;
+    })
 }
-
+document.querySelector('#repeat-button').addEventListener('click', ()=>{
+    repeatMyParam('Param')
+})
 // PROBLEM 7
 /*
     Now that we have the response data, let's add it to our web page! 
@@ -105,13 +139,23 @@ const repeatMyParam = () => {
 /*
     Time to attach a query to our request!
 
-    Write a function that makes a get request to 'http://localhost:3000/query-test', with a query of your choice on the end!
+    Write a function that makes a get request to 'http://localhost:3000/query-test', 
+    with a query of your choice on the end!
 
-    Outside of your new function, select the button with the id "query-button" and add a click event listener that calls your function.
+    Outside of your new function, select the button with the id "query-button"
+     and add a click event listener that calls your function.
 */
 
 // CODE HERE
 
+//URL -> query ? -> = Data 
+let query = () =>{
+    axios.get(`http://localhost:3000/query-test?test=${sayHelloButton.textContent}&name="duh"`).then(res =>{
+        console.log(res.data)
+    })
+}
+
+document.querySelector("#query-button").addEventListener('click', query)
 
 
 ////////////////
@@ -120,20 +164,26 @@ const repeatMyParam = () => {
 
 // PROBLEM 9
 /* 
-    Back in the ohMy function on Problem 5, replace the console log in the promise's callback with a for loop that loops over res.data. 
+    Back in the ohMy function on Problem 5, 
+    replace the console log in the promise's callback with a 
+    for loop that loops over res.data. 
 
-    On each iteration of the loop, create a new p element. Set its textContent equal the string at the current index (i) and then append the new p element onto the document's body. 
+    On each iteration of the loop, create a new p element. 
+    Set its textContent equal the string at the current index (i) 
+    and then append the new p element onto the document's body. 
 */
 
 // Code in the ohMy function in Problem 5
 
 // PROBLEM 10 
 /*
-    In the function that you wrote for Problem 8, change the URL to test a couple different scenarios. 
+    In the function that you wrote for Problem 8, 
+    change the URL to test a couple different scenarios. 
 
     1: Send no queries on the URL -- what happened? 
-
+    Console.logs You sent an empty query!
     2: Send more than 1 query on the URL -- what happened? 
+    console.logs You sent multiple queries and links the res.queries in an object.
 */
 
 // Edit code in Problem 8
@@ -146,9 +196,14 @@ const repeatMyParam = () => {
 
 //PROBLEM 11
 /*
-    You are going to add the ability to POST to the server. You'll need to create a small form and write a function that makes a post request. Then you'll attach that function to the submit event on the form. We'll be creating a list of foods. 
+    You are going to add the ability to POST to the server. 
+    You'll need to create a small form and write a function that makes a post request. 
+    Then you'll attach that function to the submit event on the form. We'll be creating a 
+    list of foods. 
 
-    In the index.html file inside of the client folder, create a form with one text input field and a button. The input field should have a placeholder that tells the user to enter a food. And the button should indicate that it will add food into a list. 
+    In the index.html file inside of the client folder, create a form with one text 
+    input field and a button. The input field should have a placeholder that tells the 
+    user to enter a food. And the button should indicate that it will add food into a list. 
 
     In this file (script.js), create a function called createFood. 
     
@@ -164,3 +219,23 @@ const repeatMyParam = () => {
 */
 
 // CODE HERE 
+
+
+let createFood = (e) =>{
+    e.preventDefault()
+    foodInput = document.querySelector('.input');
+    let body = {
+        newFood: foodInput.value
+    }
+    axios.post('http://localhost:3000/food', body).then(res =>{
+        let p = document.createElement('p');
+            let text = res.data.join(' ')
+            p.textContent = text;
+            let body = document.querySelector('body');
+            body.appendChild(p)
+    })
+
+    foodInput.value = ' '
+}
+
+document.querySelector('#sendTest').addEventListener('submit', createFood)
